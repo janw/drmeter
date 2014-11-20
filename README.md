@@ -1,10 +1,20 @@
-# PyDRmeter
+# DRmeter for Python
 
 **work in progress**
 
 ## Synposis
 
 Based on the reverse-engineered algorithm proposed by the Pleasurize Music Foundation. While this function's output is not permitted to be called an  official Dynamic Range (DR) value it does still comply with 99.9% of the results of one of the official DR meters.
+
+## Requirements
+
+In order to run the DRmeter, you need to have the following Python packages installed:
+
+* Numpy
+* PySoundFile
+* CFFI
+
+The function has been developed using Python 3.4 on a Mac. Supported audio file formats are given by the underlying `libsndfile` library.
 
 ## Usage
 

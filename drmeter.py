@@ -10,22 +10,18 @@ from pysoundfile import SoundFile
 blocklenSec     = 3
 RMSpercentage   = 20
 NhighestPeak    = 2
-
-testfile = "mylo_xyloto_1ch.wav"
+recurse = False
 
 def main(argv):
-
-    recurse = False
-    inputfile = "."
 
     try:
         opts, args = getopt.getopt(argv,"hr",["help","recursive"])
     except getopt.GetoptError:
-        print("drmeter.py -i <audiofile>")
+        print("drmeter.py <audiofile or path>")
         sys.exit(2)
     for opt, arg in opts:
         if opt == '-h':
-            print("drmeter.py -i <inputfile> -o <outputfile>")
+            print("drmeter.py <audiofile or path>")
             sys.exit()
         elif opt in ("-r", "--recursive"):
             recurse = True
@@ -39,8 +35,6 @@ def main(argv):
 
     for nfile in filelist:
         calc_drscore(nfile)
-
-
 
 
 def calc_drscore(filename):
