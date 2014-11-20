@@ -46,16 +46,16 @@ def calc_drscore(filename):
     RMS[:] = RMS[::-1,:]
     Pk[:] = Pk[::-1,:]
 
-    RMS_upmost = RMS[:][:iUpmostBlocks]
-    RMS_total = math.sqrt((RMS*RMS).mean())
+    RMS_upmost = RMS[:iUpmostBlocks,:]
+    RMS_total = np.sqrt((np.power(RMS,2)).mean(axis=0))
 
-    pre0 = np.power(RMS_upmost,2).sum()
+    pre0 = np.power(RMS_upmost,2).sum(axis=0)
     pre1 = np.repeat(iUpmostBlocks, Nchannels, axis=0)
-    pre2 = math.sqrt(pre0/pre1)
+    pre2 = np.sqrt(pre0/pre1)
 
-    DR_score = Pk[NhighestPeak-1]/pre2
+    DR_score = Pk[NhighestPeak-1,:]/pre2
     RMS_score = RMS_total
-    Peak_score = Pk[0]
+    Peak_score = Pk[0,:]
 
     DR_score_log = 20*np.log10(DR_score);
     RMS_score_log = 20*np.log10(RMS_score);
