@@ -10,8 +10,32 @@ NhighestPeak = 2
 
 testfile = "mylo_xyloto_1ch.wav"
 
-def main():
-    calc_drscore(testfile)
+def main(argv):
+
+    recurse = False
+    inputfile = "."
+
+    try:
+        opts, args = getopt.getopt(argv,"hr",["help","recursive"])
+    except getopt.GetoptError:
+        print("drmeter.py -i <audiofile>")
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt == '-h':
+            print("drmeter.py -i <inputfile> -o <outputfile>")
+            sys.exit()
+        elif opt in ("-r", "--recursive"):
+            recurse = True
+
+    filelist = []
+    idx = 0
+    for arg in args:
+        if isfile(arg)==True:
+            filelist.append(arg)
+            idx+=1
+
+    for nfile in filelist:
+        calc_drscore(nfile)
 
 
 
@@ -70,4 +94,4 @@ def calc_drscore(filename):
     return DR_score_log
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])
