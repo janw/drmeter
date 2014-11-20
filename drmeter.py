@@ -1,5 +1,8 @@
+#!/usr/bin/python
 
 import sys, getopt
+import glob
+from os.path import isfile, join
 import math
 import numpy as np
 from pysoundfile import SoundFile
