@@ -7,9 +7,9 @@ import math
 import numpy as np
 from pysoundfile import SoundFile
 
-blocklenSec = 3
-RMSpercentage = 20
-NhighestPeak = 2
+blocklenSec     = 3
+RMSpercentage   = 20
+NhighestPeak    = 2
 
 testfile = "mylo_xyloto_1ch.wav"
 
@@ -88,11 +88,27 @@ def calc_drscore(filename):
     RMS_score_log = 20*np.log10(RMS_score);
     Peak_score_log = 20*np.log10(Peak_score);
 
-
-
-    print(Peak_score_log)
-    print(RMS_score_log)
-    print(DR_score_log)
+    print()
+    print("DR analysis results:")
+    print("====================")
+    print(filename)
+    print()
+    print("     :  ", end="")
+    for n in range(Nchannels):
+        print(" Chann {0:2d}  :: ".format(n+1), end="")
+    print()
+    print("Peak :  ", end="")
+    for peak in Peak_score_log:
+        print("{0:7.2f} dB :: ".format(peak), end="")
+    print()
+    print("RMS  :  ", end="")
+    for rms in RMS_score_log:
+        print("{0:7.2f} dB :: ".format(rms), end="")
+    print()
+    print("DR   :  ", end="")
+    for dr in DR_score_log:
+        print("{0:7.2f}    :: ".format(dr), end="")
+    print()
 
     return DR_score_log
 
