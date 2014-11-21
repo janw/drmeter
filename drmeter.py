@@ -2,7 +2,8 @@
 
 import sys, getopt
 import glob
-from os.path import isfile, join
+from os.path import isfile, join, dirname, split
+from os import remove
 import math
 import numpy as np
 from pysoundfile import SoundFile
@@ -10,9 +11,12 @@ from pysoundfile import SoundFile
 blocklenSec     = 3
 RMSpercentage   = 20
 NhighestPeak    = 2
-recurse = False
+
 
 def main(argv):
+    recurse = False
+    textout = True
+
 
     try:
         opts, args = getopt.getopt(argv,"hr",["help","recursive"])
@@ -25,16 +29,63 @@ def main(argv):
             sys.exit()
         elif opt in ("-r", "--recursive"):
             recurse = True
+        elif opt in ("-t", "--textout"):
+            textout = True
 
     filelist = []
-    idx = 0
     for arg in args:
         if isfile(arg)==True:
             filelist.append(arg)
-            idx+=1
 
+    if textout==True:
+        path = dirname(filelist[0])
+        textpath = join(path, "{0}_dr.txt".format(split(path)[-1]))
+        try:
+            f = open(textpath, "x")
+        except FileExistsError:
+            remove(textpath)
+            f = open(textpath, "x")
+
+
+        dashedline = "".join(["-"[:5]] * 94)
+
+
+        f.write(dashedline + "\n")
+        f.write(" Analyzed folder: {0}\n".format(path))
+        f.write(dashedline + "\n")
+        f.write(" DR\t\tPeak\t\tRMS\t\tFilename\n")
+        f.write(dashedline + "\n\n")
+        f.close()
+
+    idx = 0
     for nfile in filelist:
-        calc_drscore(nfile)
+        DR, Peak, RMS = calc_drscore(nfile)
+        if idx == 0:
+            DR_all = np.zeros((len(filelist),len(DR)))
+            DR_all[idx,:] = DR
+        else:
+            DR_all[idx,:] = DR
+        idx+=1
+
+        if textout==True:
+            f = open(textpath, "a")
+            f.write(" DR{0:.0f}\t\t{1:.2f} dB\t{2:.2f} dB \t{3}\n".format(
+                    DR.mean(),
+                    10*np.log10(np.power(10,Peak/10).mean()),
+                    10*np.log10(np.power(10,RMS/10).mean()),
+                    split(nfile)[-1]))
+            f.close()
+
+
+
+    if textout==True:
+        f = open(textpath, "a")
+        f.write(dashedline + "\n\n")
+        f.write(" Number of files:\t{0:d}\n".format(len(filelist)))
+        f.write(" Official DR value:\tDR{0:.0f}\n\n".format(DR_all.mean()))
+        f.write("".join(["="[:5]] * 94) + "\n")
+        f.close()
+
 
 
 def calc_drscore(filename):
@@ -104,7 +155,7 @@ def calc_drscore(filename):
         print("{0:7.2f}    :: ".format(dr), end="")
     print()
 
-    return DR_score_log
+    return DR_score_log, Peak_score_log, RMS_score_log
 
 if __name__ == "__main__":
     main(sys.argv[1:])
