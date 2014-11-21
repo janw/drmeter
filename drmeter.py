@@ -12,88 +12,94 @@ from pysoundfile import SoundFile
 blocklenSec = 3
 RMSpercentage = 20
 NhighestPeak = 2
-
+textout = True
 
 def main(argv):
     recurse = False
-    textout = True
 
     try:
-        opts, args = getopt.getopt(argv, "hr", ["help", "recursive"])
+        opts, args = getopt.getopt(argv, "h", ["help"])
     except getopt.GetoptError:
         print("drmeter.py <audiofile or path>")
         sys.exit(2)
-    for opt, arg in opts:
-        if opt == '-h':
-            print("drmeter.py <audiofile or path>")
-            sys.exit()
-        elif opt in ("-r", "--recursive"):
-            recurse = True
-        elif opt in ("-t", "--textout"):
-            textout = True
 
-    filelist = []
     for arg in args:
+        filelist = []
         if isfile(arg) is True:
+            try:
+                SoundFile(arg)
+            except RuntimeError:
+                continue
             filelist.append(arg)
         elif isdir(arg) is True:
             for root, dirs, files in walk(arg):
                 for file in files:
-                    if file.endswith(".flac"):
-                        filelist.append(join(root, file))
-
-    if len(filelist) == 0:
-        raise IOError("No matching files have been found")
-
-    if textout is True:
-        path = dirname(filelist[0])
-        textpath = join(path, "{0}_dr.txt".format(split(path)[-1]))
-        try:
-            f = open(textpath, "x")
-        except FileExistsError:
-            remove(textpath)
-            f = open(textpath, "x")
-
-        linewidth = 75
-        dashedline = "".join(["-"[:5]] * linewidth)
-
-        if len(path) > linewidth - 18:
-            path = split(path)[-1]
-
-        f.write(dashedline + "\n")
-        f.write(" Analyzed folder: {0}\n".format(path))
-        f.write(dashedline + "\n")
-        f.write(" DR      Peak         RMS       Filename\n")
-        f.write(dashedline + "\n\n")
-        f.close()
-
-    idx = 0
-    for nfile in filelist:
-        DR, Peak, RMS = calc_drscore(nfile)
-        if idx == 0:
-            DR_all = np.zeros((len(filelist), len(DR)))
-            DR_all[idx, :] = DR
+                    try:
+                        SoundFile(join(root, file))
+                    except RuntimeError:
+                        continue
+                    filelist.append(join(root, file))
         else:
-            DR_all[idx, :] = DR
-        idx += 1
+            print("Ignoring '{0}' (not a file or folder)".format(arg))
+            continue
+
+        if len(filelist) == 0:
+            raise IOError("No matching files have been found")
+
+        if textout is True:
+            path = dirname(filelist[0])
+            textpath = join(path, "{0}_dr.txt".format(split(path)[-1]))
+            try:
+                f = open(textpath, "x")
+            except FileExistsError:
+                remove(textpath)
+                f = open(textpath, "x")
+
+            linewidth = 75
+            dashedline = "".join(["-"[:5]] * linewidth)
+
+            if len(path) > linewidth - 18:
+                path = split(path)[-1]
+
+            f.write(dashedline + "\n")
+            f.write(" Analyzed folder: {0}\n".format(path))
+            f.write(dashedline + "\n")
+            f.write(" DR      Peak         RMS       Filename\n")
+            f.write(dashedline + "\n\n")
+            f.close()
+
+        idx = 0
+        for nfile in filelist:
+            # try:
+            DR, Peak, RMS = calc_drscore(nfile)
+            # except RuntimeError:
+                # For unrecognizable (non-audio) files
+                # continue
+
+            if idx == 0:
+                DR_all = np.zeros((len(filelist), len(DR)))
+                DR_all[idx, :] = DR
+            else:
+                DR_all[idx, :] = DR
+            idx += 1
+
+            if textout is True:
+                f = open(textpath, "a")
+                f.write(" DR{0:02.0f}  {1:+6.2f} dB    {2:+6.2f} dB   {3}\n"
+                        .format(
+                            DR.mean(),
+                            10 * np.log10(np.power(10, Peak / 10).mean()),
+                            10 * np.log10(np.power(10, RMS / 10).mean()),
+                            split(nfile)[-1]))
+                f.close()
 
         if textout is True:
             f = open(textpath, "a")
-            f.write(" DR{0:02.0f}  {1:+6.2f} dB    {2:+6.2f} dB   {3}\n"
-                    .format(
-                        DR.mean(),
-                        10 * np.log10(np.power(10, Peak / 10).mean()),
-                        10 * np.log10(np.power(10, RMS / 10).mean()),
-                        split(nfile)[-1]))
+            f.write(dashedline + "\n\n")
+            f.write(" Number of files:\t{0:d}\n".format(len(filelist)))
+            f.write(" Official DR value:\tDR{0:.0f}\n\n".format(DR_all.mean()))
+            f.write("".join(["="[:5]] * linewidth) + "\n")
             f.close()
-
-    if textout is True:
-        f = open(textpath, "a")
-        f.write(dashedline + "\n\n")
-        f.write(" Number of files:\t{0:d}\n".format(len(filelist)))
-        f.write(" Official DR value:\tDR{0:.0f}\n\n".format(DR_all.mean()))
-        f.write("".join(["="[:5]] * linewidth) + "\n")
-        f.close()
 
     return
 
