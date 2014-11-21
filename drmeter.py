@@ -46,14 +46,16 @@ def main(argv):
             remove(textpath)
             f = open(textpath, "x")
 
+        linewidth = 75
+        dashedline = "".join(["-"[:5]] * linewidth)
 
-        dashedline = "".join(["-"[:5]] * 94)
-
+        if len(path) > linewidth-18:
+            path = split(path)[-1]
 
         f.write(dashedline + "\n")
         f.write(" Analyzed folder: {0}\n".format(path))
         f.write(dashedline + "\n")
-        f.write(" DR\t\tPeak\t\tRMS\t\tFilename\n")
+        f.write(" DR      Peak         RMS       Filename\n")
         f.write(dashedline + "\n\n")
         f.close()
 
@@ -69,11 +71,12 @@ def main(argv):
 
         if textout==True:
             f = open(textpath, "a")
-            f.write(" DR{0:.0f}\t\t{1:.2f} dB\t{2:.2f} dB \t{3}\n".format(
-                    DR.mean(),
-                    10*np.log10(np.power(10,Peak/10).mean()),
-                    10*np.log10(np.power(10,RMS/10).mean()),
-                    split(nfile)[-1]))
+            f.write(" DR{0:02.0f}  {1:+6.2f} dB    {2:+6.2f} dB   {3}\n"
+                    .format(
+                            DR.mean(),
+                            10*np.log10(np.power(10,Peak/10).mean()),
+                            10*np.log10(np.power(10,RMS/10).mean()),
+                            split(nfile)[-1]))
             f.close()
 
 
@@ -83,7 +86,7 @@ def main(argv):
         f.write(dashedline + "\n\n")
         f.write(" Number of files:\t{0:d}\n".format(len(filelist)))
         f.write(" Official DR value:\tDR{0:.0f}\n\n".format(DR_all.mean()))
-        f.write("".join(["="[:5]] * 94) + "\n")
+        f.write("".join(["="[:5]] * linewidth) + "\n")
         f.close()
 
 
