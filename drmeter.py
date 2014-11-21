@@ -3,8 +3,8 @@
 import sys
 import getopt
 import glob
-from os.path import isfile, join, dirname, split
-from os import remove
+from os.path import isfile, join, dirname, split, isdir
+from os import remove, walk
 import math
 import numpy as np
 from pysoundfile import SoundFile
@@ -34,8 +34,16 @@ def main(argv):
 
     filelist = []
     for arg in args:
-        if isfile(arg)==True:
+        if isfile(arg) is True:
             filelist.append(arg)
+        elif isdir(arg) is True:
+            for root, dirs, files in walk(arg):
+                for file in files:
+                    if file.endswith(".flac"):
+                        filelist.append(join(root, file))
+
+    if len(filelist) == 0:
+        raise IOError("No matching files have been found")
 
     if textout is True:
         path = dirname(filelist[0])
