@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import getopt
@@ -7,12 +7,13 @@ from os.path import isfile, join, dirname, split, isdir
 from os import remove, walk
 import math
 import numpy as np
-from pysoundfile import SoundFile
+from soundfile import SoundFile
 
 blocklenSec = 3
 RMSpercentage = 20
 NhighestPeak = 2
 textout = True
+
 
 def main(argv):
     recurse = False
@@ -108,20 +109,15 @@ def calc_drscore(filename):
 
     data = SoundFile(filename)
 
-    NblockLen = round(blocklenSec * data.sample_rate)
+    NblockLen = round(blocklenSec * data.samplerate)
     NblockIdx = math.ceil(data.frames / NblockLen)
-    Nsamples = data.frames
     Nchannels = data.channels
 
     RMS = np.zeros((NblockIdx, Nchannels))
     Pk = np.zeros((NblockIdx, Nchannels))
 
     for nn in range(NblockIdx):
-        if nn < NblockIdx:
-            curData = data[
-                1 + (nn) * NblockLen:1 + (NblockLen + (nn) * NblockLen), :]
-        else:
-            curData = data[1 + (nn) * NblockLen:, :]
+        curData = np.array(data.read(NblockLen), ndmin=2)
 
         for cc in range(Nchannels):
             interim = 2 * (np.power(np.abs(curData[:, cc]), 2))
@@ -173,6 +169,7 @@ def calc_drscore(filename):
     print()
 
     return DR_score_log, Peak_score_log, RMS_score_log
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
