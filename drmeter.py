@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
 import getopt
-import glob
-from os.path import isfile, join, dirname, split, isdir
-from os import remove, walk
 import math
+import sys
+from os import remove, walk
+from os.path import dirname, isdir, isfile, join, split
+
 import numpy as np
 from soundfile import SoundFile
 
@@ -16,8 +16,6 @@ textout = True
 
 
 def main(argv):
-    recurse = False
-
     try:
         opts, args = getopt.getopt(argv, "h", ["help"])
     except getopt.GetoptError:
@@ -71,11 +69,7 @@ def main(argv):
 
         idx = 0
         for nfile in filelist:
-            # try:
             DR, Peak, RMS = calc_drscore(nfile)
-            # except RuntimeError:
-                # For unrecognizable (non-audio) files
-                # continue
 
             if idx == 0:
                 DR_all = np.zeros((len(filelist), len(DR)))
@@ -86,12 +80,14 @@ def main(argv):
 
             if textout is True:
                 f = open(textpath, "a")
-                f.write(" DR{0:02.0f}  {1:+6.2f} dB    {2:+6.2f} dB   {3}\n"
-                        .format(
-                            DR.mean(),
-                            10 * np.log10(np.power(10, Peak / 10).mean()),
-                            10 * np.log10(np.power(10, RMS / 10).mean()),
-                            split(nfile)[-1]))
+                f.write(
+                    " DR{0:02.0f}  {1:+6.2f} dB    {2:+6.2f} dB   {3}\n".format(
+                        DR.mean(),
+                        10 * np.log10(np.power(10, Peak / 10).mean()),
+                        10 * np.log10(np.power(10, RMS / 10).mean()),
+                        split(nfile)[-1],
+                    )
+                )
                 f.close()
 
         if textout is True:
@@ -106,7 +102,6 @@ def main(argv):
 
 
 def calc_drscore(filename):
-
     data = SoundFile(filename)
 
     NblockLen = round(blocklenSec * data.samplerate)
