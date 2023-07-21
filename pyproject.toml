@@ -7,17 +7,26 @@ license = "MIT"
 readme = "README.md"
 repository = "https://github.com/janw/drmeter"
 
-[tool.poetry.dependencies]
-python = "^3.8"
-soundfile = "^0.12.1"
-numpy = "^1.24"
+[tool.poetry.scripts]
+drmeter = 'drmeter.cli:main'
 
+[tool.poetry.dependencies]
+python = "^3.9"
+soundfile = "^0.12.1"
+numpy = "^1.25"
+rich = "^13.4.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.3.3"
 black = "^23.7.0"
 ruff = "^0.0.278"
 tox = "^4.6.4"
+ipython = "^8.14.0"
+ipdb = "^0.13.13"
+mypy = "^1.4.1"
+
+[tool.poetry.group.tests.dependencies]
+pytest = "^7.4.0"
 
 [tool.ruff]
 line-length = 120
@@ -25,7 +34,7 @@ target-version = "py39"
 extend-select = [
     "I",   # isort
     "B",   # bugbear
-    "A",   # builtins FIXME: uncomment
+    "A",   # builtins
     "ISC", # implicit-str-concat
     "Q",   # quotes
     "TID", # tidy-imports
@@ -44,8 +53,18 @@ ignore = [
 max-complexity = 10
 
 [tool.black]
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311']
 include = '\.pyi?$'
+
+[tool.mypy]
+warn_unused_configs = true
+disallow_untyped_defs = true
+strict_optional = true
+packages = ["drmeter", "tests"]
+
+[[tool.mypy.overrides]]
+module = "soundfile.*"
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry-core"]
