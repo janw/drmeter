@@ -9,7 +9,7 @@ import numpy as np
 import soundfile as sf
 from rich.table import Table
 
-from drmeter.utils import rich_box, rich_spinner, to_decibels
+from drmeter.utils import fmt_dr_score, rich_box, rich_spinner, to_decibels
 
 if TYPE_CHECKING:
     from rich.console import Console, ConsoleOptions, RenderableType
@@ -66,7 +66,7 @@ class AnalysisItem:
         if not self.result:
             return (rich_spinner, rich_spinner, rich_spinner, self.path.name)
         return (
-            f"DR{self.result.total_dr_score:02.0f}",
+            fmt_dr_score(self.result.total_dr_score),
             f"{self.result.total_peak_db:+6.2f} dB",
             f"{self.result.total_rms_db:+6.2f} dB",
             self.path.name,
@@ -77,9 +77,10 @@ class AnalysisItem:
 class AnalysisList:
     results: dict[Path, AnalysisItem] = field(default_factory=dict)
 
+    overall_result: DynamicRangeResult | None = None
+
     _table: Table | None = None
     _directory: Path | None = None
-    _overall: DynamicRangeResult | None = None
     _overall_count: int = 0
 
     def __len__(self) -> int:
@@ -114,11 +115,11 @@ class AnalysisList:
         self._table.add_section()
         desc = f"Overall ({self._overall_count} file{'s' if self._overall_count !=1 else ''})"
         style = "bold magenta"
-        if self._overall and self._overall_count:
+        if self.overall_result and self._overall_count:
             self._table.add_row(
-                f"DR{self._overall.total_dr_score:02.0f}",
-                f"{self._overall.total_peak_db:+6.2f} dB",
-                f"{self._overall.total_rms_db:+6.2f} dB",
+                fmt_dr_score(self.overall_result.total_dr_score),
+                f"{self.overall_result.total_peak_db:+6.2f} dB",
+                f"{self.overall_result.total_rms_db:+6.2f} dB",
                 desc,
                 style=style,
             )
@@ -143,7 +144,7 @@ class AnalysisList:
             result_count += 1
 
         if result_count > 0:
-            self._overall = DynamicRangeResult(
+            self.overall_result = DynamicRangeResult(
                 dr_score=dr_score / result_count,
                 peak_pressure=peak_pressure,
                 rms_pressure=rms_pressure / result_count,

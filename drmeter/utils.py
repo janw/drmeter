@@ -32,6 +32,10 @@ def to_decibels(val: float) -> float:
     return 20 * math.log10(val)
 
 
+def fmt_dr_score(val: float) -> str:
+    return f"DR{val:.0f}"
+
+
 rich_box = Box(
     """\
 ╭──╮

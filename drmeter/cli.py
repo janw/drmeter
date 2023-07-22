@@ -1,62 +1,151 @@
 from __future__ import annotations
 
-import argparse
-from pathlib import Path
+import pathlib
+from typing import Callable, TypeVar
 
+import rich_click as click
 import soundfile as sf
 from rich.console import Console
 from rich.live import Live
+from rich.text import Text
 
+from drmeter import __name__ as prog_name
+from drmeter import __version__
 from drmeter.algorithm import SUPPORTED_EXTENSIONS
 from drmeter.models import AnalysisList
+from drmeter.utils import fmt_dr_score
+
+T = TypeVar("T")
 
 
-def filename_or_directory_arg(value: str) -> Path:
-    path = Path(value)
-    if path.is_dir() or path.is_file():
-        return path
-    raise ValueError(f"Filename or directory '{value}' does not exist")
+def required_without_formats(ctx: click.Context, param: click.Parameter, value: T) -> T:
+    if not ctx.params.get("formats", False) and value is None:
+        raise click.MissingParameter
+    return value
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "filename_or_directory",
-        metavar="FILENAME_OR_DIRECTORY",
-        type=filename_or_directory_arg,
-    )
-    parser.add_argument(
-        "-l",
-        "--log",
-        action="store_true",
-    )
-    parser.add_argument(
-        "-q",
-        "--quiet",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--list-formats",
-        action="store_true",
-    )
-    args = parser.parse_args(argv)
+def mutually_exclusive_flag(*exclusives: str) -> Callable:
+    def _mutually_exclusive(ctx: click.Context, param: click.Parameter, value: T) -> T:
+        assert param.name
+        for excl in exclusives:
+            if ctx.params.get(excl, False) is True and value is True:
+                raise click.BadOptionUsage(
+                    param.name,
+                    f"Option '--{param.name}' and '--{excl}' are mutually exclusive.",
+                    ctx=ctx,
+                )
+        return value
 
-    if args.list_formats:
+    return _mutually_exclusive
+
+
+click.rich_click.USE_RICH_MARKUP = True
+click.rich_click.USE_MARKDOWN = True
+
+
+@click.command(
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+    },
+)
+@click.argument(
+    "filepath",
+    type=click.Path(
+        exists=True,
+        readable=True,
+        file_okay=True,
+        dir_okay=True,
+    ),
+    required=False,
+    callback=required_without_formats,
+)
+@click.option(
+    "-F",
+    "--formats",
+    is_flag=True,
+    help="Show a list of supported formats and exit.",
+)
+@click.option(
+    "-d",
+    "--debug",
+    is_flag=True,
+    help="Emit debug-level messages about the analysis.",
+    callback=mutually_exclusive_flag("quiet"),
+)
+@click.option(
+    "-q",
+    "--quiet",
+    is_flag=True,
+    help=(
+        "Don't emit non-error messages. "
+        "Errors are still emitted; silence those with 2>/dev/null."
+    ),
+    callback=mutually_exclusive_flag("debug"),
+)
+@click.version_option(
+    __version__,
+    "-V",
+    "--version",
+    prog_name=prog_name,
+)
+def main(
+    filepath: str | pathlib.Path,
+    formats: bool = False,
+    quiet: bool = False,
+    debug: bool = False,
+) -> int:
+    """
+    Dynamic Range (DR) analyzer for audiofiles.
+
+    Given a filename or directory, the tool will analyze the supported files for their
+    dynamic range (DR). For a list of supported formats, use the --formats flag.
+
+    Lower DR values are an indicator for a more liberal use of dynamic compression and
+    limiting in the music production process that can be detrimental to the audio
+    quality of the recording, resulting in a squashed sound that can be fatiguing to
+    listen to.
+
+    Higher values generally imply a higher audio quality and details being more
+    perceivable. There is no such thing as "best dynamic range", and there are many more
+    aspects of a recording that influence its perceived quality. Dynamic Range (as
+    calculated by this tool) is merely a tool to become more aware of the differences,
+    and ultimately end the [loudness war](https://en.wikipedia.org/wiki/Loudness_war).
+    """
+    console = Console(quiet=quiet)
+    if debug:
+        console.print("Debug mode is on", style="bold magenta")
+
+    if isinstance(filepath, str):
+        filepath = pathlib.Path(filepath)
+
+    if formats:
         for fmt, description in sf.available_formats().items():
             print(f"{fmt:8s} : {description}")
         return 0
 
-    console = Console(quiet=args.quiet)
-    path = args.filename_or_directory
-    if path.is_dir():
-        console.print(f"Analyzing Dynamic Range of files in {path} ...")
-        files = sorted(f for f in path.glob("*") if f.suffix in SUPPORTED_EXTENSIONS)
+    if filepath.is_dir():
+        text = Text.assemble(
+            "Analyzing Dynamic Range of files in ",
+            (str(filepath), "bold magenta"),
+            " ...\n",
+        )
+        files = sorted(
+            f for f in filepath.glob("*") if f.suffix in SUPPORTED_EXTENSIONS
+        )
     else:
-        console.print(f"Analyzing Dynamic Range of {path} ...")
-        files = [path]
+        text = Text.assemble(
+            "Analyzing Dynamic Range of ",
+            (str(filepath), "bold magenta"),
+            " ...\n",
+        )
+        files = [filepath]
 
+    console.print(text)
     results = AnalysisList.from_paths(files)
     with Live(results, console=console, refresh_per_second=15):  # type: ignore[attr-defined]
         results.analyze()
+
+    if quiet and results.overall_result:
+        click.echo(fmt_dr_score(results.overall_result.total_dr_score))
 
     return 0
