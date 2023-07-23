@@ -1,5 +1,9 @@
+.ruff_cache/
+.tox/
 .venv/
 venv/
 *.flac
 *.wav
 *.txt
+*.mp4
+*.mp3

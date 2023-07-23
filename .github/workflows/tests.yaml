@@ -1,0 +1,63 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
+
+jobs:
+  pytest:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        python-version:
+          - "3.9"
+          - "3.10"
+          - "3.11"
+          # - "3.12"
+
+    name: pytest-${{ runner.os }}-${{ matrix.python-version }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - name: Set up .tox caching
+        uses: actions/cache@v3
+        with:
+          path: '.tox'
+          # NOTE: GitHub actions does not support cache deletion yet,
+          # increase numeric key suffix to force-bypass caching
+          key: tox-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}-0
+
+      - name: Set up python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install tox 'tox-gh>=1.2' poetry
+
+      - name: Setup tox
+        run: tox -v --notest
+
+      - name: Run tox
+        run: tox --skip-pkg-install -- --cov-report=xml --cov
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          name: coverage-${{ runner.os }}-${{ matrix.python-version }}
