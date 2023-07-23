@@ -9,7 +9,7 @@ from rich.console import Console
 from rich.live import Live
 from rich.text import Text
 
-from drmeter import __name__ as prog_name
+from drmeter import __name__ as pkg_name
 from drmeter import __version__
 from drmeter.algorithm import SUPPORTED_EXTENSIONS
 from drmeter.models import AnalysisList
@@ -86,7 +86,7 @@ click.rich_click.USE_MARKDOWN = True
     __version__,
     "-V",
     "--version",
-    prog_name=prog_name,
+    prog_name=pkg_name,
 )
 def main(
     filepath: str | pathlib.Path,
