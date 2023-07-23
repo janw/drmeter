@@ -5,7 +5,7 @@
 <div align="center">
 
 [![Tests](https://github.com/janw/drmeter/actions/workflows/tests.yaml/badge.svg)](https://github.com/janw/drmeter/actions/workflows/tests.yaml)
-[![Coverage Status](https://codecov.io/gh/janw/drmeter/branch/master/graph/badge.svg?token=N8DBXQTM74)](https://codecov.io/gh/janw/drmeter)
+[![Coverage Status](https://codecov.io/gh/janw/drmeter/branch/main/graph/badge.svg?token=N8DBXQTM74)](https://codecov.io/gh/janw/drmeter)
 
 [![PyPI](https://img.shields.io/pypi/v/drmeter.svg)](https://pypi.org/project/drmeter/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/drmeter.svg)](https://pypi.org/project/drmeter/)
