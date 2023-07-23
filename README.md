@@ -15,11 +15,10 @@
 [![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Dependency management: poetry](https://img.shields.io/badge/deps-poetry-blueviolet.svg)](https://poetry.eustace.io/docs/)
 
+<p>A Dynamic Range (DR) analyzer for audiofiles.<p>
+
+<a href="https://asciinema.org/a/598647" target="_blank"><img alt="Asciicast of installing and using drmeter" src="https://asciinema.org/a/598647.svg" /></a>
 </div>
-
-A Dynamic Range (DR) analyzer for audiofiles.
-
-[![asciicast](https://asciinema.org/a/598647.svg)](https://asciinema.org/a/598647)
 
 The algorithm has been reverse-engineered using the available information and officially endorsed software to calcuate the DR value. The analysis results of `drmeter` are verified to be within a ±0.5 absolute tolerance from the results produced by officially endorsed software (see #testing).
 
