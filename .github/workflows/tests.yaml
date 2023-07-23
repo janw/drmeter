@@ -23,7 +23,7 @@ jobs:
           - "3.11"
           # - "3.12"
 
-    name: pytest-${{ runner.os }}-${{ matrix.python-version }}
+    name: pytest-${{ matrix.os }}-${{ matrix.python-version }}
     steps:
       - name: Check out
         uses: actions/checkout@v3
