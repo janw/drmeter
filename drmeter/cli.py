@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pathlib
+from contextlib import nullcontext
 from typing import Callable, TypeVar
 
 import rich_click as click
@@ -112,7 +113,7 @@ def main(
     """
     console = Console(quiet=quiet)
     if debug:
-        console.print("Debug mode is on", style="bold magenta")
+        click.echo("Debug mode is on")
 
     if isinstance(filepath, str):
         filepath = pathlib.Path(filepath)
@@ -140,8 +141,13 @@ def main(
 
     console.print(text)
     results = AnalysisList.from_paths(files)
-    with Live(results, console=console, refresh_per_second=15):  # type: ignore[attr-defined]
-        results.analyze(live=not quiet)
+    live_ctx = (
+        nullcontext()
+        if debug
+        else Live(results, console=console, refresh_per_second=15)
+    )
+    with live_ctx:  # type: ignore[attr-defined]
+        results.analyze(debug=debug, live=not quiet)
 
     if quiet and results.overall_result:
         click.echo(fmt_dr_score(results.overall_result.total_dr_score))

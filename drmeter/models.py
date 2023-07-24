@@ -90,16 +90,24 @@ class AnalysisList:
     def from_paths(cls, paths: list[Path]) -> AnalysisList:
         return cls(results={path: AnalysisItem(path=path) for path in paths})
 
-    def analyze(self, live: bool = False) -> None:
-        def analyze_and_update(result: AnalysisItem) -> None:
-            result.analyze()
-            if live:
-                self.calculate_overall_result()
-                self.generate_table()
+    def analyze(self, debug: bool = False, live: bool = False) -> None:
+        if debug:
+            import click
 
-        with ThreadPoolExecutor() as pool:
-            for result in self.results.values():
-                pool.submit(analyze_and_update, result)
+            for path, result in self.results.items():
+                click.echo(f"Analyzing {path} ...")
+                result.analyze()
+        else:
+
+            def analyze_and_update(result: AnalysisItem) -> None:
+                result.analyze()
+                if live:
+                    self.calculate_overall_result()
+                    self.generate_table()
+
+            with ThreadPoolExecutor() as pool:
+                for result in self.results.values():
+                    pool.submit(analyze_and_update, result)
 
         self.calculate_overall_result()
 
