@@ -1,15 +1,22 @@
 from __future__ import annotations
 
+import json
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 
 import numpy as np
 import soundfile as sf
 from rich.table import Table
 
-from drmeter.utils import fmt_dr_score, rich_box, rich_spinner, to_decibels
+from drmeter.utils import (
+    fmt_dr_score,
+    rich_box,
+    rich_spinner,
+    serialize,
+    to_decibels,
+)
 
 if TYPE_CHECKING:
     from rich.console import Console, ConsoleOptions, RenderableType
@@ -24,31 +31,33 @@ class DynamicRangeResult:
     peak_db: np.ndarray | float = field(repr=False, init=False)
     rms_db: np.ndarray | float = field(repr=False, init=False)
 
-    total_dr_score: float = field(repr=False, init=False)
-    total_peak_pressure: float = field(repr=False, init=False)
-    total_rms_pressure: float = field(repr=False, init=False)
+    overall_dr_score: float = field(repr=False, init=False)
+    overall_peak_pressure: float = field(repr=False, init=False)
+    overall_rms_pressure: float = field(repr=False, init=False)
 
-    total_peak_db: float = field(init=False)
-    total_rms_db: float = field(init=False)
+    overall_peak_db: float = field(init=False)
+    overall_rms_db: float = field(init=False)
 
     def __post_init__(self) -> None:
-        self.total_dr_score = (
+        self.overall_dr_score = (
             self.dr_score.mean()
             if isinstance(self.dr_score, np.ndarray)
             else self.dr_score
         )
-        self.total_peak_pressure = (
+        self.overall_peak_pressure = (
             self.peak_pressure.max()
             if isinstance(self.peak_pressure, np.ndarray)
             else self.peak_pressure
         )
-        self.total_rms_pressure = (
+        self.overall_rms_pressure = (
             self.rms_pressure.mean()
             if isinstance(self.rms_pressure, np.ndarray)
             else self.rms_pressure
         )
-        self.total_peak_db = to_decibels(self.total_peak_pressure)
-        self.total_rms_db = to_decibels(self.total_rms_pressure)
+        self.peak_db = to_decibels(self.peak_pressure)  # type: ignore[type-var]
+        self.rms_db = to_decibels(self.rms_pressure)  # type: ignore[type-var]
+        self.overall_peak_db = to_decibels(self.overall_peak_pressure)
+        self.overall_rms_db = to_decibels(self.overall_rms_pressure)
 
 
 @dataclass
@@ -66,11 +75,24 @@ class AnalysisItem:
         if not self.result:
             return (rich_spinner, rich_spinner, rich_spinner, self.path.name)
         return (
-            fmt_dr_score(self.result.total_dr_score),
-            f"{self.result.total_peak_db:+6.2f} dB",
-            f"{self.result.total_rms_db:+6.2f} dB",
+            fmt_dr_score(self.result.overall_dr_score),
+            f"{self.result.overall_peak_db:+6.2f} dB",
+            f"{self.result.overall_rms_db:+6.2f} dB",
             self.path.name,
         )
+
+    def to_dict(self) -> dict[str, Any]:
+        data = {"filename": str(self.path.absolute())}
+        if not self.result:
+            return data
+
+        obj = asdict(self.result)
+        del obj["peak_pressure"]
+        del obj["rms_pressure"]
+        del obj["overall_peak_pressure"]
+        del obj["overall_rms_pressure"]
+        data.update(serialize(obj))
+        return data
 
 
 @dataclass
@@ -111,6 +133,10 @@ class AnalysisList:
 
         self.calculate_overall_result()
 
+    def to_json(self) -> str:
+        results = [item.to_dict() for item in self.results.values() if item.result]
+        return json.dumps(results, indent=2)
+
     def generate_table(self) -> None:
         self._table = Table(show_header=True, header_style="bold magenta", box=rich_box)
         self._table.add_column("DR", width=5)
@@ -128,9 +154,9 @@ class AnalysisList:
         style = "bold magenta"
         if self.overall_result and self._overall_count:
             self._table.add_row(
-                fmt_dr_score(self.overall_result.total_dr_score),
-                f"{self.overall_result.total_peak_db:+6.2f} dB",
-                f"{self.overall_result.total_rms_db:+6.2f} dB",
+                fmt_dr_score(self.overall_result.overall_dr_score),
+                f"{self.overall_result.overall_peak_db:+6.2f} dB",
+                f"{self.overall_result.overall_rms_db:+6.2f} dB",
                 desc,
                 style=style,
             )
@@ -149,9 +175,9 @@ class AnalysisList:
             if not result.result:
                 continue
 
-            dr_score += result.result.total_dr_score
-            peak_pressure = max(result.result.total_peak_pressure, peak_pressure)
-            rms_pressure += result.result.total_rms_pressure
+            dr_score += result.result.overall_dr_score
+            peak_pressure = max(result.result.overall_peak_pressure, peak_pressure)
+            rms_pressure += result.result.overall_rms_pressure
             result_count += 1
 
         if result_count > 0:

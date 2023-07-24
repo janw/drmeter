@@ -60,6 +60,12 @@ click.rich_click.USE_MARKDOWN = True
     callback=required_without_formats,
 )
 @click.option(
+    "-o",
+    "--output",
+    type=click.Choice(["json"]),
+    help="Select a specific output format.",
+)
+@click.option(
     "-F",
     "--formats",
     is_flag=True,
@@ -93,6 +99,7 @@ def main(
     formats: bool = False,
     quiet: bool = False,
     debug: bool = False,
+    output: str | None = None,
 ) -> int:
     """
     Dynamic Range (DR) analyzer for audiofiles.
@@ -111,7 +118,7 @@ def main(
     calculated by this tool) is merely a tool to become more aware of the differences,
     and ultimately end the [loudness war](https://en.wikipedia.org/wiki/Loudness_war).
     """
-    console = Console(quiet=quiet)
+    console = Console(quiet=quiet, stderr=bool(output))
     if debug:
         click.echo("Debug mode is on")
 
@@ -149,7 +156,14 @@ def main(
     with live_ctx:  # type: ignore[attr-defined]
         results.analyze(debug=debug, live=not quiet)
 
-    if quiet and results.overall_result:
-        click.echo(fmt_dr_score(results.overall_result.total_dr_score))
+    assert results.overall_result
+    content = None
+    if output == "json":
+        content = results.to_json()
+    elif quiet:
+        content = fmt_dr_score(results.overall_result.overall_dr_score)
+
+    if content:
+        click.echo(content)
 
     return 0

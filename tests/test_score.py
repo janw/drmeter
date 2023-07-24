@@ -42,6 +42,6 @@ def test_score_for_fixture(
     with sf.SoundFile(FIXTURES_DIR / filename) as data:
         result = dynamic_range(data)
 
-    assert result.total_rms_db == expected_rms
-    assert result.total_peak_db == expected_peak
-    assert result.total_dr_score == expected_score
+    assert result.overall_rms_db == expected_rms
+    assert result.overall_peak_db == expected_peak
+    assert result.overall_dr_score == expected_score
