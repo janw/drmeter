@@ -4,7 +4,6 @@ import pathlib
 from typing import Callable, TypeVar
 
 import rich_click as click
-import soundfile as sf
 from rich.console import Console
 from rich.live import Live
 from rich.text import Text
@@ -13,7 +12,7 @@ from drmeter import __name__ as pkg_name
 from drmeter import __version__
 from drmeter.algorithm import SUPPORTED_EXTENSIONS
 from drmeter.models import AnalysisList
-from drmeter.utils import fmt_dr_score
+from drmeter.utils import fmt_dr_score, print_formats
 
 T = TypeVar("T")
 
@@ -119,8 +118,7 @@ def main(
         filepath = pathlib.Path(filepath)
 
     if formats:
-        for fmt, description in sf.available_formats().items():
-            print(f"{fmt:8s} : {description}")
+        print_formats(console)
         return 0
 
     if filepath.is_dir():

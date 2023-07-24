@@ -5,18 +5,11 @@ from contextlib import contextmanager
 from typing import Generator
 
 import numpy as np
+import soundfile as sf
 from rich.box import Box
+from rich.console import Console
 from rich.spinner import Spinner
 from rich.table import Table
-
-
-def create_rich_table() -> Table:
-    table = Table(show_header=True, header_style="bold magenta")
-    table.add_column("DR")
-    table.add_column("Peak", justify="right")
-    table.add_column("RMS", justify="right")
-    table.add_column("Filename")
-    return table
 
 
 @contextmanager
@@ -50,3 +43,12 @@ rich_box = Box(
 )
 
 rich_spinner = Spinner("dots")
+
+
+def print_formats(console: Console) -> None:
+    table = Table(show_header=True, header_style="bold magenta", box=rich_box)
+    table.add_column("Extension")
+    table.add_column("Description")
+    for fmt, description in sf.available_formats().items():
+        table.add_row(fmt, description)
+    console.print(table)
