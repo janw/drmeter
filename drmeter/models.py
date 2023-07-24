@@ -90,15 +90,18 @@ class AnalysisList:
     def from_paths(cls, paths: list[Path]) -> AnalysisList:
         return cls(results={path: AnalysisItem(path=path) for path in paths})
 
-    def analyze(self) -> None:
+    def analyze(self, live: bool = False) -> None:
         def analyze_and_update(result: AnalysisItem) -> None:
             result.analyze()
-            self.calculate_overall_result()
-            self.generate_table()
+            if live:
+                self.calculate_overall_result()
+                self.generate_table()
 
         with ThreadPoolExecutor() as pool:
             for result in self.results.values():
                 pool.submit(analyze_and_update, result)
+
+        self.calculate_overall_result()
 
     def generate_table(self) -> None:
         self._table = Table(show_header=True, header_style="bold magenta", box=rich_box)

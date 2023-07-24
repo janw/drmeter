@@ -141,7 +141,7 @@ def main(
     console.print(text)
     results = AnalysisList.from_paths(files)
     with Live(results, console=console, refresh_per_second=15):  # type: ignore[attr-defined]
-        results.analyze()
+        results.analyze(live=not quiet)
 
     if quiet and results.overall_result:
         click.echo(fmt_dr_score(results.overall_result.total_dr_score))
