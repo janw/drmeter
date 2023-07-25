@@ -34,6 +34,30 @@ DEFAULT_ABS_TOL_RMS = 1e-2
             pytest.approx(-5.64, abs=DEFAULT_ABS_TOL_PEAK),
             pytest.approx(-22.42, abs=DEFAULT_ABS_TOL_RMS),
         ),
+        (
+            "tee_falcon69_mixture.mp3",
+            pytest.approx(12, abs=DEFAULT_ABS_TOL_DR),
+            pytest.approx(0.01, abs=DEFAULT_ABS_TOL_PEAK),
+            pytest.approx(-13.69, abs=DEFAULT_ABS_TOL_RMS),
+        ),
+        (
+            "tee_sdnr_bass.mp3",
+            pytest.approx(11, abs=DEFAULT_ABS_TOL_DR),
+            pytest.approx(-6.72, abs=DEFAULT_ABS_TOL_PEAK),
+            pytest.approx(-21.72, abs=DEFAULT_ABS_TOL_RMS),
+        ),
+        (
+            "tee_sdnr_mix.mp3",
+            pytest.approx(12, abs=DEFAULT_ABS_TOL_DR),
+            pytest.approx(-1.33, abs=DEFAULT_ABS_TOL_PEAK),
+            pytest.approx(-16.06, abs=DEFAULT_ABS_TOL_RMS),
+        ),
+        (
+            "tee_sdnr_vocals.mp3",
+            pytest.approx(11, abs=DEFAULT_ABS_TOL_DR),
+            pytest.approx(-5.16, abs=DEFAULT_ABS_TOL_PEAK),
+            pytest.approx(-19.80, abs=DEFAULT_ABS_TOL_RMS),
+        ),
     ],
 )
 def test_score_for_fixture(
