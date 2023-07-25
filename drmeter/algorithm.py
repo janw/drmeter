@@ -5,7 +5,7 @@ import math
 import numpy as np
 import soundfile as sf
 
-from drmeter.models import DynamicRangeResult
+from drmeter.models import AudioData, DynamicRangeResult
 from drmeter.utils import ignore_div0
 
 BLOCKSIZE_SECONDS = 3
@@ -35,7 +35,7 @@ def _analyze_block_levels(
     return block_rms, block_peak
 
 
-def dynamic_range(data: sf.SoundFile) -> DynamicRangeResult:
+def dynamic_range(data: AudioData) -> DynamicRangeResult:
     blocksize = round(BLOCKSIZE_SECONDS * data.samplerate)
     total_blocks = math.ceil(data.frames / blocksize)
     if total_blocks < MIN_BLOCK_COUNT:

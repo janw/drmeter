@@ -74,6 +74,11 @@ omit = [
     "venv/*",
 ]
 
+[tool.coverage.report]
+exclude_also = [
+    "if TYPE_CHECKING:"
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

@@ -4,7 +4,7 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable, Iterator
 
 import numpy as np
 import soundfile as sf
@@ -20,6 +20,32 @@ from drmeter.utils import (
 
 if TYPE_CHECKING:
     from rich.console import Console, ConsoleOptions, RenderableType
+
+
+@dataclass
+class AudioData:
+    data: sf.SoundFile | np.ndarray
+    samplerate: int
+    channels: int
+    frames: int
+
+    def blocks(self, blocksize: int) -> Iterator[np.ndarray]:
+        if isinstance(self.data, sf.SoundFile):
+            yield from self.data.blocks(blocksize=blocksize)
+            return
+        idx = 0
+        while idx <= self.frames:
+            yield self.data[idx:blocksize]
+            idx += self.frames
+
+    @classmethod
+    def from_soundfile(cls, soundfile: sf.SoundFile) -> AudioData:
+        return cls(
+            data=soundfile,
+            channels=soundfile.channels,
+            frames=soundfile.frames,
+            samplerate=soundfile.samplerate,
+        )
 
 
 @dataclass
@@ -69,7 +95,7 @@ class AnalysisItem:
         from drmeter.algorithm import dynamic_range
 
         with sf.SoundFile(self.path) as soundfile:
-            self.result = dynamic_range(soundfile)
+            self.result = dynamic_range(AudioData.from_soundfile(soundfile))
 
     def rich_table_render(self) -> tuple[RenderableType, ...]:
         if not self.result:
