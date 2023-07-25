@@ -38,6 +38,8 @@ Any regular `pip install drmeter` will do, too. The `drmeter` requires Python 3.
 
 See `drmeter --help` for usage instructions.
 
+![`drmeter --help`](docs/img/drmeter-help.svg)
+
 ## Example output
 
 TBD

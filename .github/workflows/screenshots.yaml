@@ -1,0 +1,27 @@
+name: Rich-codex
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "**.md"
+      - .rich-codex.yml
+      - drmeter/cli.py
+jobs:
+  rich_codex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Install your custom tools
+        run: pip install .
+
+      - name: Generate terminal images with rich-codex
+        uses: ewels/rich-codex@v1
+        with:
+          commit_changes: "true"
+          clean_img_paths: docs/img/*.svg
+          skip_git_checks: "true"
+          terminal_min_width: 120
+          notrim: "true"
