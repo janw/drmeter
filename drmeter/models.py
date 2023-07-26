@@ -50,12 +50,12 @@ class AudioData:
 
 @dataclass
 class DynamicRangeResult:
-    dr_score: np.ndarray | float
-    peak_pressure: np.ndarray | float = field(repr=False)
-    rms_pressure: np.ndarray | float = field(repr=False)
+    dr_score: np.ndarray
+    peak_pressure: np.ndarray = field(repr=False)
+    rms_pressure: np.ndarray = field(repr=False)
 
-    peak_db: np.ndarray | float = field(repr=False, init=False)
-    rms_db: np.ndarray | float = field(repr=False, init=False)
+    peak_db: np.ndarray = field(repr=False, init=False)
+    rms_db: np.ndarray = field(repr=False, init=False)
 
     overall_dr_score: float = field(repr=False, init=False)
     overall_peak_pressure: float = field(repr=False, init=False)
@@ -208,9 +208,9 @@ class AnalysisList:
 
         if result_count > 0:
             self.overall_result = DynamicRangeResult(
-                dr_score=dr_score / result_count,
-                peak_pressure=peak_pressure,
-                rms_pressure=rms_pressure / result_count,
+                dr_score=np.array([dr_score / result_count]),
+                peak_pressure=np.array([peak_pressure]),
+                rms_pressure=np.array([rms_pressure / result_count]),
             )
             self._overall_count = result_count
 
