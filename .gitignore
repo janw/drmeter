@@ -2,6 +2,8 @@
 .tox/
 .venv/
 venv/
+.coverage
+*.json
 *.flac
 *.wav
 *.txt
