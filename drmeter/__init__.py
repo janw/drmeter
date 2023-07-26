@@ -1,8 +1,10 @@
 import importlib.metadata as importlib_metadata
 
 from drmeter.algorithm import dynamic_range
+from drmeter.compat import calc_drscore
 
 __all__ = [
+    "calc_drscore",
     "dynamic_range",
 ]
 
