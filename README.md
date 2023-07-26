@@ -6,14 +6,15 @@
 
 [![Tests](https://github.com/janw/drmeter/actions/workflows/tests.yaml/badge.svg)](https://github.com/janw/drmeter/actions/workflows/tests.yaml)
 [![Coverage Status](https://codecov.io/gh/janw/drmeter/branch/main/graph/badge.svg?token=N8DBXQTM74)](https://codecov.io/gh/janw/drmeter)
+[![Docker](https://github.com/janw/drmeter/actions/workflows/docker.yaml/badge.svg)](https://github.com/janw/drmeter/pkgs/container/drmeter)
 
 [![PyPI](https://img.shields.io/pypi/v/drmeter.svg)](https://pypi.org/project/drmeter/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/drmeter.svg)](https://pypi.org/project/drmeter/)
 [![Downloads](https://static.pepy.tech/badge/drmeter)](https://pepy.tech/project/drmeter)
 
-[![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://github.com/charliermarsh/ruff)
-[![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-[![Dependency management: poetry](https://img.shields.io/badge/deps-poetry-blueviolet.svg)](https://poetry.eustace.io/docs/)
+[![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://beta.ruff.rs/docs/)
+[![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/en/stable/)
+[![Dependency management: poetry](https://img.shields.io/badge/deps-poetry-blueviolet.svg)](https://python-poetry.org/docs/)
 
 <p>A Dynamic Range (DR) analyzer for audiofiles.<p>
 
