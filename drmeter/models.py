@@ -34,9 +34,9 @@ class AudioData:
             yield from self.data.blocks(blocksize=blocksize)
             return
         idx = 0
-        while idx <= self.frames:
-            yield self.data[idx:blocksize]
-            idx += self.frames
+        while len(block := self.data[idx:blocksize]) > 0:
+            yield block
+            idx += blocksize
 
     @classmethod
     def from_soundfile(cls, soundfile: sf.SoundFile) -> AudioData:

@@ -1,66 +1,14 @@
-from pathlib import Path
-
 import numpy as np
 import pytest
 import soundfile as sf
 
 from drmeter.algorithm import dynamic_range
+from drmeter.exceptions import FileTooShort
 from drmeter.models import AudioData
-
-FIXTURES_DIR = Path(__file__).parent / "fixtures"
-
-DEFAULT_ABS_TOL_DR = 5e-1
-DEFAULT_ABS_TOL_PEAK = 1e-2
-DEFAULT_ABS_TOL_RMS = 1e-2
+from tests.fixtures import FIXTURES_DIR, parametrize_fixtures
 
 
-@pytest.mark.parametrize(
-    "filename, expected_score, expected_peak, expected_rms",
-    [
-        (
-            "silence.wav",
-            0,
-            -np.inf,
-            -np.inf,
-        ),
-        (
-            "csd_en001b.mp3",
-            pytest.approx(10, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(-8.38, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-22.24, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-        (
-            "csd_kr032b.mp3",
-            pytest.approx(11, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(-5.64, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-22.42, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-        (
-            "tee_falcon69_mixture.mp3",
-            pytest.approx(12, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(0.01, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-13.69, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-        (
-            "tee_sdnr_bass.mp3",
-            pytest.approx(11, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(-6.72, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-21.72, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-        (
-            "tee_sdnr_mix.mp3",
-            pytest.approx(12, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(-1.33, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-16.06, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-        (
-            "tee_sdnr_vocals.mp3",
-            pytest.approx(11, abs=DEFAULT_ABS_TOL_DR),
-            pytest.approx(-5.16, abs=DEFAULT_ABS_TOL_PEAK),
-            pytest.approx(-19.80, abs=DEFAULT_ABS_TOL_RMS),
-        ),
-    ],
-)
+@parametrize_fixtures
 def test_score_for_fixture(
     filename: str, expected_score: float, expected_peak: float, expected_rms: float
 ) -> None:
@@ -79,5 +27,17 @@ def test_error_too_short() -> None:
         channels=1,
         frames=100,
     )
-    with pytest.raises(RuntimeError):
-        dynamic_range(AudioData.from_soundfile(data))
+    with pytest.raises(FileTooShort):
+        dynamic_range(data)
+
+
+def test_from_np_array() -> None:
+    data = AudioData(
+        data=np.zeros((8000 * 15, 1)),
+        samplerate=8000,
+        channels=1,
+        frames=8000 * 15,
+    )
+    result = dynamic_range(data)
+
+    assert result.dr_score[0] == 0

@@ -1,0 +1,44 @@
+[
+    {
+        "filename": "silence.wav",
+        "expected_score": 0,
+        "expected_peak": -Infinity,
+        "expected_rms": -Infinity
+    },
+    {
+        "filename": "csd_en001b.mp3",
+        "expected_score": 10,
+        "expected_peak": -8.38,
+        "expected_rms": -22.24
+    },
+    {
+        "filename": "csd_kr032b.mp3",
+        "expected_score": 11,
+        "expected_peak": -5.64,
+        "expected_rms": -22.42
+    },
+    {
+        "filename": "tee_falcon69_mixture.mp3",
+        "expected_score": 12,
+        "expected_peak": 0.01,
+        "expected_rms": -13.69
+    },
+    {
+        "filename": "tee_sdnr_bass.mp3",
+        "expected_score": 11,
+        "expected_peak": -6.72,
+        "expected_rms": -21.72
+    },
+    {
+        "filename": "tee_sdnr_mix.mp3",
+        "expected_score": 12,
+        "expected_peak": -1.33,
+        "expected_rms": -16.06
+    },
+    {
+        "filename": "tee_sdnr_vocals.mp3",
+        "expected_score": 11,
+        "expected_peak": -5.16,
+        "expected_rms": -19.80
+    }
+]

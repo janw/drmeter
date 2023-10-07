@@ -5,6 +5,7 @@ import math
 import numpy as np
 import soundfile as sf
 
+from drmeter.exceptions import FileTooShort
 from drmeter.models import AudioData, DynamicRangeResult
 from drmeter.utils import ignore_div0
 
@@ -39,7 +40,7 @@ def dynamic_range(data: AudioData) -> DynamicRangeResult:
     blocksize = round(BLOCKSIZE_SECONDS * data.samplerate)
     total_blocks = math.ceil(data.frames / blocksize)
     if total_blocks < MIN_BLOCK_COUNT:
-        raise RuntimeError(f"File cannot be shorter than {MIN_DURATION} seconds")
+        raise FileTooShort(f"File cannot be shorter than {MIN_DURATION} seconds")
 
     block_rms, block_peak = _analyze_block_levels(
         data, total_blocks=total_blocks, blocksize=blocksize
