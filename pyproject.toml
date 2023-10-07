@@ -18,13 +18,13 @@ rich = "^13.4.2"
 rich-click = "^1.6.1"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^3.3.3"
-black = "^23.7.0"
-ruff = "^0.0.278"
+pre-commit = "^3.4.0"
+black = "^23.9.1"
+ruff = "^0.0.291"
 tox = "^4.6.4"
 ipython = "^8.14.0"
 ipdb = "^0.13.13"
-mypy = "^1.4.1"
+mypy = "^1.5.1"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^7.4.0"
