@@ -10,5 +10,5 @@ __all__ = [
 
 try:
     __version__ = importlib_metadata.version(__name__)
-except importlib_metadata.PackageNotFoundError:
+except importlib_metadata.PackageNotFoundError:  # pragma: no cover
     __version__ = "dev"

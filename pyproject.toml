@@ -13,7 +13,7 @@ drmeter = 'drmeter.cli:main'
 [tool.poetry.dependencies]
 python = "^3.9"
 soundfile = "^0.12.1"
-numpy = "^1.25"
+numpy = {version = "^1.26", python="<3.13"}
 rich = "^13.4.2"
 rich-click = "^1.6.1"
 
@@ -78,6 +78,9 @@ omit = [
 exclude_also = [
     "if TYPE_CHECKING:"
 ]
+fail_under = 60
+precision = 2
+show_missing = true
 
 [build-system]
 requires = ["poetry-core"]
