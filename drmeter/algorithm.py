@@ -42,9 +42,7 @@ def dynamic_range(data: AudioData) -> DynamicRangeResult:
     if total_blocks < MIN_BLOCK_COUNT:
         raise FileTooShort(f"File cannot be shorter than {MIN_DURATION} seconds")
 
-    block_rms, block_peak = _analyze_block_levels(
-        data, total_blocks=total_blocks, blocksize=blocksize
-    )
+    block_rms, block_peak = _analyze_block_levels(data, total_blocks=total_blocks, blocksize=blocksize)
     with ignore_div0():
         rms_pressure = np.sqrt((np.power(block_rms, 2)).mean(axis=0))
         peak_pressure = block_peak[-1]
@@ -62,6 +60,4 @@ def dynamic_range(data: AudioData) -> DynamicRangeResult:
         ]
     )
 
-    return DynamicRangeResult(
-        dr_score=dr_score, peak_pressure=peak_pressure, rms_pressure=rms_pressure
-    )
+    return DynamicRangeResult(dr_score=dr_score, peak_pressure=peak_pressure, rms_pressure=rms_pressure)

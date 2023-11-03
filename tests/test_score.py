@@ -9,9 +9,7 @@ from tests.fixtures import FIXTURES_DIR, parametrize_fixtures
 
 
 @parametrize_fixtures
-def test_score_for_fixture(
-    filename: str, expected_score: float, expected_peak: float, expected_rms: float
-) -> None:
+def test_score_for_fixture(filename: str, expected_score: float, expected_peak: float, expected_rms: float) -> None:
     with sf.SoundFile(FIXTURES_DIR / filename) as data:
         result = dynamic_range(AudioData.from_soundfile(data))
 

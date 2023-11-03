@@ -65,20 +65,12 @@ class DynamicRangeResult:
     overall_rms_db: float = field(init=False)
 
     def __post_init__(self) -> None:
-        self.overall_dr_score = (
-            self.dr_score.mean()
-            if isinstance(self.dr_score, np.ndarray)
-            else self.dr_score
-        )
+        self.overall_dr_score = self.dr_score.mean() if isinstance(self.dr_score, np.ndarray) else self.dr_score
         self.overall_peak_pressure = (
-            self.peak_pressure.max()
-            if isinstance(self.peak_pressure, np.ndarray)
-            else self.peak_pressure
+            self.peak_pressure.max() if isinstance(self.peak_pressure, np.ndarray) else self.peak_pressure
         )
         self.overall_rms_pressure = (
-            self.rms_pressure.mean()
-            if isinstance(self.rms_pressure, np.ndarray)
-            else self.rms_pressure
+            self.rms_pressure.mean() if isinstance(self.rms_pressure, np.ndarray) else self.rms_pressure
         )
         self.peak_db = to_decibels(self.peak_pressure)  # type: ignore[type-var]
         self.rms_db = to_decibels(self.rms_pressure)  # type: ignore[type-var]
@@ -187,9 +179,7 @@ class AnalysisList:
                 style=style,
             )
         else:
-            self._table.add_row(
-                rich_spinner, rich_spinner, rich_spinner, desc, style=style
-            )
+            self._table.add_row(rich_spinner, rich_spinner, rich_spinner, desc, style=style)
 
     def calculate_overall_result(self) -> None:
         result_count = 0
@@ -214,9 +204,7 @@ class AnalysisList:
             )
             self._overall_count = result_count
 
-    def __rich_console__(
-        self, console: Console, options: ConsoleOptions
-    ) -> Iterable[Table]:
+    def __rich_console__(self, console: Console, options: ConsoleOptions) -> Iterable[Table]:
         if not self._table:
             self.generate_table()
         assert self._table
