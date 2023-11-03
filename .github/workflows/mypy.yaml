@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+    tags:
+      - "*"
+env:
+  TOXENV: mypy
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.12"
+
+    name: mypy
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+
+      - name: Set up .tox caching
+        uses: actions/cache@v3
+        with:
+          path: '.tox'
+          # NOTE: GitHub actions does not support cache deletion yet,
+          # increase numeric key suffix to force-bypass caching
+          key: mypy-${{ matrix.python-version }}-${{ hashFiles('poetry.lock') }}-0
+
+      - name: Set up python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install tox poetry
+
+      - name: Run tox
+        run: tox -v
