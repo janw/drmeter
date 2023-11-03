@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drmeter"
-version = "0.2.1"
+version = "0.2.2"
 description = "Dynamic Range (DR) algorithm implementation in python"
 authors = ["Jan Willhaus <mail@janwillhaus.de>"]
 license = "MIT"
@@ -31,7 +31,7 @@ pytest = "^7.4.0"
 pytest-cov = "^4.1.0"
 
 [tool.bumpversion]
-current_version = "0.2.1"
+current_version = "0.2.2"
 commit = true
 tag = true
 sign_tags = true
