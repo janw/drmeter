@@ -30,6 +30,4 @@ def load_fixtures() -> list[tuple[str, float, float, float]]:
     ]
 
 
-parametrize_fixtures = pytest.mark.parametrize(
-    "filename, expected_score, expected_peak, expected_rms", load_fixtures()
-)
+parametrize_fixtures = pytest.mark.parametrize("filename, expected_score, expected_peak, expected_rms", load_fixtures())

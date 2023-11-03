@@ -19,8 +19,7 @@ rich-click = "^1.6.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.4.0"
-black = "^23.9.1"
-ruff = "^0.0.291"
+ruff = "^0.1.3"
 tox = "^4.6.4"
 ipython = "^8.14.0"
 ipdb = "^0.13.13"
@@ -49,14 +48,11 @@ unfixable = [
 ]
 ignore = [
     "SIM108", # if-else-block-instead-of-if-exp
+    "ISC001", # single-line-implicit-string-concatenation (conflicts with ruff format)
 ]
 
 [tool.ruff.mccabe]
 max-complexity = 10
-
-[tool.black]
-target-version = ['py39', 'py310', 'py311']
-include = '\.pyi?$'
 
 [tool.mypy]
 warn_unused_configs = true

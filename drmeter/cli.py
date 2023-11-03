@@ -82,10 +82,7 @@ click.rich_click.USE_MARKDOWN = True
     "-q",
     "--quiet",
     is_flag=True,
-    help=(
-        "Don't emit non-error messages. "
-        "Errors are still emitted; silence those with 2>/dev/null."
-    ),
+    help=("Don't emit non-error messages. " "Errors are still emitted; silence those with 2>/dev/null."),
     callback=mutually_exclusive_flag("debug"),
 )
 @click.version_option(
@@ -135,9 +132,7 @@ def main(
             (str(filepath), "bold magenta"),
             " ...\n",
         )
-        files = sorted(
-            f for f in filepath.glob("*") if f.suffix in SUPPORTED_EXTENSIONS
-        )
+        files = sorted(f for f in filepath.glob("*") if f.suffix in SUPPORTED_EXTENSIONS)
     else:
         text = Text.assemble(
             "Analyzing Dynamic Range of ",
@@ -148,11 +143,7 @@ def main(
 
     console.print(text)
     results = AnalysisList.from_paths(files)
-    live_ctx = (
-        nullcontext()
-        if debug
-        else Live(results, console=console, refresh_per_second=15)
-    )
+    live_ctx = nullcontext() if debug else Live(results, console=console, refresh_per_second=15)
     with live_ctx:  # type: ignore[attr-defined]
         results.analyze(debug=debug, live=not quiet)
 

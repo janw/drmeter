@@ -15,9 +15,7 @@ def max_across_channels(vals: np.ndarray) -> np.ndarray:
 
 
 @parametrize_fixtures
-def test_compat_calc_drscore(
-    filename: str, expected_score: float, expected_peak: float, expected_rms: float
-) -> None:
+def test_compat_calc_drscore(filename: str, expected_score: float, expected_peak: float, expected_rms: float) -> None:
     result = calc_drscore(FIXTURES_DIR / filename)
 
     assert result[0].mean() == expected_score

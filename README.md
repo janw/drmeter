@@ -12,7 +12,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/drmeter.svg)](https://pypi.org/project/drmeter/)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/drmeter)
 
-[![Linter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v1.json)](https://beta.ruff.rs/docs/)
+[![Linter/Formatter: Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://docs.astral.sh/ruff/)
 [![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://black.readthedocs.io/en/stable/)
 [![Dependency management: poetry](https://img.shields.io/badge/deps-poetry-blueviolet.svg)](https://python-poetry.org/docs/)
 
