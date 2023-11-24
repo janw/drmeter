@@ -12,10 +12,10 @@ drmeter = 'drmeter.cli:main'
 
 [tool.poetry.dependencies]
 python = "^3.9"
-soundfile = "^0.12.1"
 numpy = {version = "^1.26", python="<3.13"}
 rich = "^13.4.2"
 rich-click = "^1.6.1"
+audiofile = "^1.3.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.4.0"

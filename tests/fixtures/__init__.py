@@ -22,7 +22,7 @@ def load_fixtures() -> list[tuple[str, float, float, float]]:
     return [
         (
             cast(str, f["filename"]),
-            cast(float, pytest.approx(f["expected_score"], abs=DEFAULT_ABS_TOL_DR)),
+            f["expected_score"],
             cast(float, pytest.approx(f["expected_peak"], abs=DEFAULT_ABS_TOL_PEAK)),
             cast(float, pytest.approx(f["expected_rms"], abs=DEFAULT_ABS_TOL_RMS)),
         )

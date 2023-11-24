@@ -11,9 +11,8 @@ from rich.text import Text
 
 from drmeter import __name__ as pkg_name
 from drmeter import __version__
-from drmeter.algorithm import SUPPORTED_EXTENSIONS
 from drmeter.models import AnalysisList
-from drmeter.utils import fmt_dr_score, print_formats
+from drmeter.utils import SUPPORTED_EXTENSIONS, fmt_dr_score, print_formats
 
 T = TypeVar("T")
 

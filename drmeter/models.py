@@ -4,10 +4,10 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Iterable, Iterator
+from typing import TYPE_CHECKING, Any, Iterable, Iterator, Self
 
+import audiofile
 import numpy as np
-import soundfile as sf
 from rich.table import Table
 
 from drmeter.utils import (
@@ -24,28 +24,22 @@ if TYPE_CHECKING:
 
 @dataclass
 class AudioData:
-    data: sf.SoundFile | np.ndarray
+    data: np.ndarray
     samplerate: int
-    channels: int
-    frames: int
+    channels: int = field(init=False)
+    frames: int = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.channels, self.frames = self.data.shape
 
     def blocks(self, blocksize: int) -> Iterator[np.ndarray]:
-        if isinstance(self.data, sf.SoundFile):
-            yield from self.data.blocks(blocksize=blocksize)
-            return
-        idx = 0
-        while len(block := self.data[idx:blocksize]) > 0:
-            yield block
-            idx += blocksize
+        for i in range(0, self.frames, blocksize):
+            yield self.data[:, i : i + blocksize]
 
     @classmethod
-    def from_soundfile(cls, soundfile: sf.SoundFile) -> AudioData:
-        return cls(
-            data=soundfile,
-            channels=soundfile.channels,
-            frames=soundfile.frames,
-            samplerate=soundfile.samplerate,
-        )
+    def from_filename(cls, filename: str | Path) -> Self:
+        data, samplerate = audiofile.read(filename)
+        return cls(data=data, samplerate=samplerate)
 
 
 @dataclass
@@ -65,7 +59,7 @@ class DynamicRangeResult:
     overall_rms_db: float = field(init=False)
 
     def __post_init__(self) -> None:
-        self.overall_dr_score = self.dr_score.mean() if isinstance(self.dr_score, np.ndarray) else self.dr_score
+        self.overall_dr_score = round(self.dr_score.mean() if isinstance(self.dr_score, np.ndarray) else self.dr_score)
         self.overall_peak_pressure = (
             self.peak_pressure.max() if isinstance(self.peak_pressure, np.ndarray) else self.peak_pressure
         )
@@ -86,8 +80,7 @@ class AnalysisItem:
     def analyze(self) -> None:
         from drmeter.algorithm import dynamic_range
 
-        with sf.SoundFile(self.path) as soundfile:
-            self.result = dynamic_range(AudioData.from_soundfile(soundfile))
+        self.result = dynamic_range(AudioData.from_filename(self.path))
 
     def rich_table_render(self) -> tuple[RenderableType, ...]:
         if not self.result:
@@ -130,6 +123,12 @@ class AnalysisList:
     def from_paths(cls, paths: list[Path]) -> AnalysisList:
         return cls(results={path: AnalysisItem(path=path) for path in paths})
 
+    def _analyze_and_update(self, result: AnalysisItem, live: bool) -> None:
+        result.analyze()
+        if live:
+            self.calculate_overall_result()
+            self.generate_table()
+
     def analyze(self, debug: bool = False, live: bool = False) -> None:
         if debug:
             import click
@@ -138,16 +137,9 @@ class AnalysisList:
                 click.echo(f"Analyzing {path} ...")
                 result.analyze()
         else:
-
-            def analyze_and_update(result: AnalysisItem) -> None:
-                result.analyze()
-                if live:
-                    self.calculate_overall_result()
-                    self.generate_table()
-
             with ThreadPoolExecutor() as pool:
                 for result in self.results.values():
-                    pool.submit(analyze_and_update, result)
+                    pool.submit(self._analyze_and_update, result, live)
 
         self.calculate_overall_result()
 

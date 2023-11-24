@@ -8,7 +8,7 @@
     {
         "filename": "csd_en001b.mp3",
         "expected_score": 10,
-        "expected_peak": -8.38,
+        "expected_peak": -8.37,
         "expected_rms": -22.24
     },
     {

@@ -14,6 +14,7 @@ from rich.table import Table
 
 V = TypeVar("V", np.ndarray, float)
 
+SUPPORTED_EXTENSIONS = {f".{fmt.lower()}" for fmt in sf.available_formats()}
 OUTPUT_ROUNDING_DECIMALS = 2
 
 
