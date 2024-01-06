@@ -21,7 +21,7 @@
 <a href="https://asciinema.org/a/598647" target="_blank"><img alt="Asciicast of installing and using drmeter" src="https://asciinema.org/a/598647.svg" /></a>
 </div>
 
-The algorithm has been reverse-engineered using the available information and officially endorsed software to calcuate the DR value. The analysis results of `drmeter` are verified to be within a ±0.5 absolute tolerance from the results produced by officially endorsed software (see #testing).
+The algorithm has been reverse-engineered using the available information and officially endorsed software to calcuate the DR value. The analysis results of `drmeter` are verified to match the DR values produced by officially endorsed software (see #testing).
 
 This project is in no way affiliated with the Pleasurize Music Foundation or its Dynamic Range Project.
 
