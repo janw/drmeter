@@ -27,11 +27,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-root --sync
 
-      - uses: actions/cache@v4
+      - id: cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-v0|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
-          save-always: true
 
       - id: pre-commit
         shell: bash
@@ -47,6 +47,13 @@ jobs:
 
           echo -e '```' >> pre-commit.log
           exit $result
+
+      - id: cache-save
+        uses: actions/cache/save@v4
+        if: always() && steps.cache-restore.outputs.cache-hit != 'true'
+        with:
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+          path: ~/.cache/pre-commit
 
       - name: Create results comment
         uses: thollander/actions-comment-pull-request@v3
