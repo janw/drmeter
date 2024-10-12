@@ -1,12 +1,11 @@
 # Dynamic Range (DR) meter 🎧
 
-
 <!-- markdownlint-disable MD033 MD013 -->
 <div align="center">
 
 [![Tests](https://github.com/janw/drmeter/actions/workflows/tests.yaml/badge.svg)](https://github.com/janw/drmeter/actions/workflows/tests.yaml)
 [![Coverage Status](https://codecov.io/gh/janw/drmeter/branch/main/graph/badge.svg?token=N8DBXQTM74)](https://codecov.io/gh/janw/drmeter)
-[![Docker](https://github.com/janw/drmeter/actions/workflows/docker.yaml/badge.svg)](https://github.com/janw/drmeter/pkgs/container/drmeter)
+[![Docker](https://github.com/janw/drmeter/actions/workflows/docker-build.yaml/badge.svg)](https://github.com/janw/drmeter/pkgs/container/drmeter)
 
 [![PyPI](https://img.shields.io/pypi/v/drmeter.svg)](https://pypi.org/project/drmeter/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/drmeter.svg)](https://pypi.org/project/drmeter/)
