@@ -20,6 +20,7 @@ jobs:
 
       - name: Set up python environment
         uses: actions/setup-python@v5
+        id: setup-python
         with:
           cache: poetry
           python-version: 3.x
@@ -31,7 +32,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-v0|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-v0|${{ steps.setup-python.outputs.python-version }}|${{ hashFiles('.pre-commit-config.yaml') }}
 
       - id: pre-commit
         shell: bash
