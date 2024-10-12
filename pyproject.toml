@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "drmeter"
-version = "0.3.1"
+version = "0.3.2"
 description = "Dynamic Range (DR) algorithm implementation in python"
 authors = ["Jan Willhaus <mail@janwillhaus.de>"]
 license = "MIT"
