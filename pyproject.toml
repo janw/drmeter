@@ -24,7 +24,7 @@ tox = "^4"
 ipython = "^8"
 ipdb = "^0.13.13"
 mypy = "^1"
-bump-my-version = "^0.11.0"
+bump-my-version = ">=0.11,<0.28"
 commitizen = "^3.29.1"
 
 [tool.poetry.group.tests.dependencies]
