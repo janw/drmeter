@@ -19,7 +19,7 @@ rich-click = "^1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4"
-ruff = "0.7.2"
+ruff = "0.6.9"
 tox = "^4"
 ipython = "^8"
 ipdb = "^0.13.13"
