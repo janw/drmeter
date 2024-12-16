@@ -19,17 +19,17 @@ rich-click = "^1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4"
-ruff = "0.6.9"
+ruff = "0.8.3"
 tox = "^4"
 ipython = "^8"
 ipdb = "^0.13.13"
 mypy = "^1"
-bump-my-version = ">=0.11,<0.28"
-commitizen = "^3.29.1"
+bump-my-version = ">=0.11,<0.29"
+commitizen = ">=3.29.1,<5.0.0"
 
 [tool.poetry.group.tests.dependencies]
 pytest = "^8"
-pytest-cov = "^5"
+pytest-cov = ">=5,<7"
 
 [tool.commitizen]
 version_scheme = "semver"
