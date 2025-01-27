@@ -12,7 +12,7 @@ drmeter = 'drmeter.cli:main'
 
 [tool.poetry.dependencies]
 python = "^3.9"
-soundfile = "^0.12.1"
+soundfile = ">=0.12.1,<0.14.0"
 numpy = "^2"
 rich = "^13"
 rich-click = "^1"
